@@ -151,11 +151,14 @@ activemq-data/
 .env
 .envrc
 .venv
+.demand_forecasting
 env/
 venv/
+demand_forecasting/
 ENV/
 env.bak/
 venv.bak/
+demand_forecasting.bak/
 
 # Spyder project settings
 .spyderproject
