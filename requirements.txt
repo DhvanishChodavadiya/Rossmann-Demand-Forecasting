@@ -4,3 +4,5 @@ seaborn
 matplotlib
 ipykernel
 scikit-learn
+missingno
+dython
