@@ -8,3 +8,4 @@ missingno
 dython
 xgboost
 pygwalker
+lightgbm 
