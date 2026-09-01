@@ -6,3 +6,5 @@ ipykernel
 scikit-learn
 missingno
 dython
+xgboost
+pygwalker
