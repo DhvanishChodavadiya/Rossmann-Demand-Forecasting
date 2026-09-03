@@ -34,7 +34,18 @@ class DataIngestion:
             df.to_csv(self.data_ingestion_config.raw_data_path, header=True,index=False)
             logging.info('Saved raw data')
 
-            train_data,test_data = train_test_split(df,test_size=0.3,random_state=42)
+            df = df.sort_values('Date')
+
+            cutoff_date = '2015-06-01'
+
+            train_data = df[df['Date'] < cutoff_date]
+            test_data = df[df['Date'] >= cutoff_date]
+
+            # X_train = train.drop(['Sales', 'Date'], axis=1)
+            # y_train = train['Sales']
+
+            # X_test = valid.drop(['Sales', 'Date'], axis=1)  
+            # y_test = valid['Sales']
 
             train_data.to_csv(self.data_ingestion_config.train_data_path, header=True, index=False)
             logging.info('Saved training data')
