@@ -9,3 +9,4 @@ dython
 xgboost
 pygwalker
 lightgbm 
+ydata-profiling
