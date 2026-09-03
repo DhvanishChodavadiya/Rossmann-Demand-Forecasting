@@ -9,4 +9,6 @@ dython
 xgboost
 pygwalker
 lightgbm 
+pydantic>=2.0
+pydantic_core>=2.0
 ydata-profiling
