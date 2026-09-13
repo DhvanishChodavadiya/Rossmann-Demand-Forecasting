@@ -33,3 +33,4 @@ pip install -r requirements.txt
 # Feature Engineering
 - log1p transform to y_train(rmspe = 21.45%). There are some outliers in "Sales", So log1p transforms data into specific range.
 - Create new features "Store_avg_sales" and "Store_avg_customers" on train set, and then merge with train and valid set(rmspe = 18.04). Create both feature on "Store" feature.
+- Turned "Assortment" feature values into 2 categories : 'b' and 'other'(rmspe : 16.27%)
