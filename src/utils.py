@@ -2,6 +2,7 @@ import sys
 from src.logger import logging
 from src.exception import CustomException
 import pandas as pd
+import numpy as np
 
 def imputing_missing_values(train_df,test_df):
     try:
@@ -64,3 +65,17 @@ def imputing_missing_values(train_df,test_df):
 
     except Exception as e:
         raise CustomException(e,sys)
+
+
+    def feature_engineering(train_df,test_df):
+        try:
+            train_df['StateHoliday'] = np.where((train_df['StateHoliday'] == '0') | (train_df['StateHoliday'] == 0),0,1)
+            test_df['StateHoliday'] = np.where((test_df['StateHoliday'] == '0') | (test_df['StateHoliday'] == 0),0,1)
+
+            train_df['Assortment'] = np.where(train_df['Assortment'] == 'b','b','other')
+            test_df['Assortment'] = np.where(test_df['Assortment'] == 'b','b','other')
+
+            return train_df,test_df
+        
+        except Exception as e:
+            raise CustomException(e,sys)
