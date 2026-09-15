@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from src.logger import logging
 from src.exception import CustomException
 from src.components.data_transformation import DataTransformation
+from src.components.model_training import ModelTraining
 
 @dataclass
 
@@ -66,4 +67,8 @@ if __name__ == '__main__':
     train_data_path,test_data_path = data_ingestion_obj.initiate_data_ingestion()
 
     data_transformation_obj = DataTransformation()
-    data_transformation_obj.initiate_data_transformation(train_data_path,test_data_path)
+    X_train,X_test,y_train,y_test = data_transformation_obj.initiate_data_transformation(train_data_path,test_data_path)
+
+    model_training_obj = ModelTraining()
+    rmspe = model_training_obj.initiate_model_training(X_train,X_test,y_train,y_test)
+    print(rmspe)

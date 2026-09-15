@@ -1,8 +1,11 @@
 import sys
+import os
 from src.logger import logging
 from src.exception import CustomException
 import pandas as pd
 import numpy as np
+import pickle
+from xgboost import XGBRegressor
 
 def imputing_missing_values(train_df,test_df):
     try:
@@ -58,24 +61,68 @@ def imputing_missing_values(train_df,test_df):
 
         logging.info('Imputed Promo2SinceWeek/Year and PromoInterval')
 
-        train_df.drop(['CompetitionOpenSinceMonth', 'CompetitionOpenSinceYear','Promo2SinceWeek','Promo2SinceYear','PromoInterval','MonthStr'], axis=1, inplace=True)
-        test_df.drop(['CompetitionOpenSinceMonth', 'CompetitionOpenSinceYear','Promo2SinceWeek','Promo2SinceYear','PromoInterval','MonthStr'], axis=1, inplace=True)
-
         return train_df,test_df
 
     except Exception as e:
         raise CustomException(e,sys)
 
 
-    def feature_engineering(train_df,test_df):
+def feature_engineering(train_df,test_df):
         try:
+            train_df = train_df[train_df['Open']==1].copy()
+            test_df = test_df[test_df['Open']==1].copy()
+
             train_df['StateHoliday'] = np.where((train_df['StateHoliday'] == '0') | (train_df['StateHoliday'] == 0),0,1)
             test_df['StateHoliday'] = np.where((test_df['StateHoliday'] == '0') | (test_df['StateHoliday'] == 0),0,1)
 
             train_df['Assortment'] = np.where(train_df['Assortment'] == 'b','b','other')
             test_df['Assortment'] = np.where(test_df['Assortment'] == 'b','b','other')
 
+            store_avg_sales = train_df.groupby('Store')['Sales'].mean().rename('Store_avg_sales')
+            store_avg_customers = train_df.groupby('Store')['Customers'].mean().rename('Store_avg_customers')
+            train_df = train_df.merge(store_avg_sales, on='Store', how='left')
+            train_df = train_df.merge(store_avg_customers, on='Store', how='left')
+            test_df = test_df.merge(store_avg_sales, on='Store', how='left')
+            test_df = test_df.merge(store_avg_customers, on='Store', how='left')
+
+            drop_columns = ['Customers','CompetitionOpenSinceMonth', 'CompetitionOpenSinceYear','Promo2SinceWeek','Promo2SinceYear','PromoInterval','MonthStr']
+
+            for col in drop_columns:
+                if col in train_df.columns:
+                    train_df.drop(columns=[col],inplace=True)
+                if col in test_df.columns:
+                    test_df.drop(columns=[col],inplace=True)
+
             return train_df,test_df
         
         except Exception as e:
             raise CustomException(e,sys)
+
+def save_object(file_path,obj):
+    try:
+        dir_path = os.path.dirname(file_path)
+        os.makedirs(dir_path,exist_ok=True)
+
+        with open(file_path,'wb') as file_obj:
+            pickle.dump(obj,file_obj)
+            
+    except Exception as e:
+        raise CustomException(e,sys)
+
+def model_training(X_train,X_test,y_train,y_test):
+    try:
+        model = XGBRegressor(tree_method='hist',n_jobs=-1)
+        model.fit(X_train,y_train)
+        pred_log = model.predict(X_test)
+        prediction = np.expm1(pred_log)
+
+        def rmspe(y_true, y_pred):
+                mask = y_true != 0
+                return np.sqrt(np.mean(((y_true[mask] - y_pred[mask]) / y_true[mask]) ** 2))
+        
+        score = rmspe(y_test.values, prediction)
+
+        return score*100,model
+
+    except Exception as e:
+        raise CustomException(e,sys)

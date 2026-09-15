@@ -10,6 +10,7 @@ from src.exception import CustomException
 from dataclasses import dataclass
 from src.utils import imputing_missing_values
 from src.utils import feature_engineering
+from src.utils import save_object
 
 
 @dataclass
@@ -62,6 +63,14 @@ class DataTransformation:
 
             y_train = np.log1p(y_train)
             logging.info("Data preprocessed successfully")
+
+            save_object(
+                file_path=self.data_transformation_config.preprocessor_obj_path,
+                obj=preprocessor_obj
+            )
+            logging.info("Saved Preprocessor successfully")
+
+            return X_train,X_test,y_train,y_test
 
         except Exception as e:
             raise CustomException(e,sys)
