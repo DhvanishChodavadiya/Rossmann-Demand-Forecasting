@@ -72,6 +72,9 @@ def feature_engineering(train_df,test_df):
             train_df = train_df[train_df['Open']==1].copy()
             test_df = test_df[test_df['Open']==1].copy()
 
+            train_df = train_df[train_df['Date'] != pd.Timestamp('2015-07-04')]
+            test_df = test_df[test_df['Date'] != pd.Timestamp('2015-07-04')]
+
             train_df['StateHoliday'] = np.where((train_df['StateHoliday'] == '0') | (train_df['StateHoliday'] == 0),0,1)
             test_df['StateHoliday'] = np.where((test_df['StateHoliday'] == '0') | (test_df['StateHoliday'] == 0),0,1)
 
@@ -111,7 +114,7 @@ def save_object(file_path,obj):
 
 def model_training(X_train,X_test,y_train,y_test):
     try:
-        model = XGBRegressor(tree_method='hist',n_jobs=-1)
+        model = XGBRegressor(tree_method='hist',n_jobs=-1,random_state=42)
         model.fit(X_train,y_train)
         pred_log = model.predict(X_test)
         prediction = np.expm1(pred_log)
