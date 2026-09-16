@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import pickle
 from xgboost import XGBRegressor
+from sklearn.model_selection import TimeSeriesSplit
 
 def imputing_missing_values(train_df,test_df):
     try:
@@ -114,7 +115,10 @@ def save_object(file_path,obj):
 
 def model_training(X_train,X_test,y_train,y_test):
     try:
-        model = XGBRegressor(tree_method='hist',n_jobs=-1,random_state=42)
+        model = XGBRegressor(
+            tree_method='hist', n_jobs=-1, random_state=42,
+            max_depth=8, learning_rate=0.05, n_estimators=500,
+            subsample=0.8, colsample_bytree=0.8)
         model.fit(X_train,y_train)
         pred_log = model.predict(X_test)
         prediction = np.expm1(pred_log)
