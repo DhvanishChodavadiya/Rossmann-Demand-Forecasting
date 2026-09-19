@@ -81,9 +81,15 @@ with col1:
         value=date(2015, 7, 15),
         min_value=date(2013, 1, 1),
         max_value=date(2015, 12, 31),
-        help="Model was trained on 2013–2015 data only. Predictions outside this "
-             "range (or far from it) are not reliable.",
+        help="Model was trained on 2013–July 2015 data only. Predictions outside this "
+         "range (or far from it) are not reliable.",
     )
+    if selected_date > date(2015, 7, 31):
+        st.warning(
+            "⚠️ No ground-truth data exists after July 31, 2015 in this dataset, so "
+            "predictions beyond this date are unvalidated extrapolations. The model's "
+            "known accuracy (~13.89% RMSPE) only applies to Jun 2 – Jul 31, 2015."
+        )
     is_open = st.selectbox("Is the store open on this day?", ["Yes", "No"], index=0)
     promo = st.selectbox("Running a Promo (daily discount) today?", ["No", "Yes"], index=0)
 
