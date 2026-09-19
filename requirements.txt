@@ -9,4 +9,7 @@ dython
 xgboost
 pygwalker
 lightgbm 
+joblib 
+streamlit
+pyarrow
 
